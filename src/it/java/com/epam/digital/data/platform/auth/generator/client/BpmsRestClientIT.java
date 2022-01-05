@@ -30,24 +30,19 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import com.epam.digital.data.platform.auth.generator.dto.rest.AuthResponseDto;
 import com.epam.digital.data.platform.auth.generator.dto.rest.AuthorizationCreateDto;
-import com.epam.digital.data.platform.auth.generator.enums.Permission;
 import com.epam.digital.data.platform.auth.generator.enums.Resource;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import java.util.List;
-import java.util.Map;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
 
 @SpringBootTest
 @ActiveProfiles("test")
-@RunWith(SpringRunner.class)
 public class BpmsRestClientIT {
 
   @Autowired

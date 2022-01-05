@@ -18,6 +18,7 @@ package com.epam.digital.data.platform.auth.generator.runner;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -34,8 +35,8 @@ import java.net.URISyntaxException;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.StringJoiner;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.boot.ApplicationArguments;
 
@@ -48,7 +49,7 @@ public class BpmsCamundaAuthCliRunnerTest extends BaseTest {
 
   private BpmsCamundaAuthCliRunner runner;
 
-  @Before
+  @BeforeEach
   public void init() throws URISyntaxException {
     var ymlObjectMapper = new ObjectMapper(new YAMLFactory());
     ymlObjectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -57,9 +58,9 @@ public class BpmsCamundaAuthCliRunnerTest extends BaseTest {
     var config2 = Paths.get(BpmsCamundaAuthCliRunnerTest.class.getResource("/test-config2.yml").toURI()).toString();
     var authFilesPaths =  new StringJoiner(",").add(config1).add(config2).toString();
     runner = new BpmsCamundaAuthCliRunner(authService, ymlObjectMapper);
-    when(args.getOptionValues("BPMS_URL")).thenReturn(List.of(bpmsUrl));
-    when(args.getOptionValues("BPMS_TOKEN")).thenReturn(List.of(tokenFilePath));
-    when(args.getOptionValues("AUTH_FILES")).thenReturn(List.of(authFilesPaths));
+    lenient().when(args.getOptionValues("BPMS_URL")).thenReturn(List.of(bpmsUrl));
+    lenient().when(args.getOptionValues("BPMS_TOKEN")).thenReturn(List.of(tokenFilePath));
+    lenient().when(args.getOptionValues("AUTH_FILES")).thenReturn(List.of(authFilesPaths));
   }
 
   @Test

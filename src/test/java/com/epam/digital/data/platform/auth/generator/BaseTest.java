@@ -19,10 +19,10 @@ package com.epam.digital.data.platform.auth.generator;
 import com.epam.digital.data.platform.auth.generator.dto.rest.AuthorizationCreateDto;
 import com.epam.digital.data.platform.auth.generator.enums.Resource;
 import java.util.List;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
 public abstract class BaseTest {
 
   protected final String jwtToken = "token";

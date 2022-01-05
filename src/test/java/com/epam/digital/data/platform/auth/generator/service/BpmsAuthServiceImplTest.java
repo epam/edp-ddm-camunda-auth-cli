@@ -34,8 +34,8 @@ import com.epam.digital.data.platform.auth.generator.enums.Resource;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
 public class BpmsAuthServiceImplTest extends BaseTest {
@@ -45,7 +45,7 @@ public class BpmsAuthServiceImplTest extends BaseTest {
 
   private AuthService authService;
 
-  @Before
+  @BeforeEach
   public void init() {
     authService = new BpmsAuthServiceImpl(bpmsRestClient);
   }
