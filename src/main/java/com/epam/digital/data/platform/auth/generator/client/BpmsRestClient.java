@@ -24,8 +24,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.UUID;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -92,9 +90,6 @@ public class BpmsRestClient {
     var headers = new HttpHeaders();
     headers.add("Content-Type", "application/json");
     headers.add("X-Access-Token", token);
-    var requestXsrfToken = UUID.randomUUID().toString();
-    headers.add("X-XSRF-TOKEN", requestXsrfToken);
-    headers.add("Cookie", String.format("XSRF-TOKEN=%s", requestXsrfToken));
     return headers;
   }
 
