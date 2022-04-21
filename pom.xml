@@ -11,20 +11,19 @@
 
 	<groupId>com.epam.digital.data.platform</groupId>
 	<artifactId>camunda-auth-cli</artifactId>
-	<version>1.5.1-SNAPSHOT</version>
+	<version>1.6.0</version>
 	<name>camunda-auth-cli</name>
 
 	<properties>
 		<java.version>11</java.version>
 		<log4j.version>2.17.0</log4j.version>
-		<ddm-starter-logger.version>1.5.2-SNAPSHOT</ddm-starter-logger.version>
+		<ddm-starter-logger.version>1.6.0.1</ddm-starter-logger.version>
 		<wiremock.verion>2.27.2</wiremock.verion>
 		<maven.surefire.plugin.version>2.22.2</maven.surefire.plugin.version>
 		<maven.failsafe.plugin.version>2.22.2</maven.failsafe.plugin.version>
 		<spring.cloud.version>2021.0.0</spring.cloud.version>
-
 		<sonar.coverage.exclusions>
-			**/com/epam/digital/data/platform/auth/generator/config/**/*,
+                        **/com/epam/digital/data/platform/auth/generator/config/**/*,
 			**/com/epam/digital/data/platform/auth/generator/dto/**/*,
 			**/com/epam/digital/data/platform/auth/generator/enums/**/*,
 			**/CamundaAuthCliApplication.java
