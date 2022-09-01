@@ -1,0 +1,16 @@
+authorization:
+  realm: 'officer'
+  process_definitions:
+    -
+      process_definition_id: 'Process_1'
+      process_name: 'name'
+      process_description: 'description'
+      roles:
+        - officer
+        - citizen
+    -
+      process_definition_id: 'business-process'
+      process_name: 'name'
+      process_description: 'description'
+      roles:
+        - officer
