@@ -11,7 +11,7 @@
 
 	<groupId>com.epam.digital.data.platform</groupId>
 	<artifactId>camunda-auth-cli</artifactId>
-	<version>1.8.0</version>
+	<version>1.8.1</version>
 	<name>camunda-auth-cli</name>
 
 	<properties>

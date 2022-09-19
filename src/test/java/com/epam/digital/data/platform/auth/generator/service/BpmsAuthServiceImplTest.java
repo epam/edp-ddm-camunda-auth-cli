@@ -63,20 +63,24 @@ public class BpmsAuthServiceImplTest extends BaseTest {
         )));
     when(bpmsRestClient.searchAuthorizationsByParams(bpmsUrl, jwtToken,
         PROCESS_DEFINITION_AUTH_SEARCH_QUERY_PARAMS))
-        .thenReturn(List.of(new AuthResponseDto("authId1", "citizen"),
-            new AuthResponseDto("authId2", "officer"),
-            new AuthResponseDto("authId33", "camunda-admin")));
+        .thenReturn(List.of(new AuthResponseDto("authId1", "citizen",
+                List.of(Permission.READ.name(), Permission.CREATE_INSTANCE.name())),
+            new AuthResponseDto("authId2", "officer",
+                List.of(Permission.READ.name(), Permission.CREATE_INSTANCE.name())),
+            new AuthResponseDto("authId33", "camunda-admin", Collections.emptyList())));
     when(bpmsRestClient.searchAuthorizationsByParams(bpmsUrl, jwtToken,
         PROCESS_INSTANCE_AUTH_SEARCH_QUERY_PARAMS))
-        .thenReturn(List.of(new AuthResponseDto("authId3", "citizen"),
-            new AuthResponseDto("authId4", "officer"),
-            new AuthResponseDto("authId44", "camunda-admin")));
+        .thenReturn(List.of(new AuthResponseDto("authId3", "citizen", Collections.emptyList()),
+            new AuthResponseDto("authId4", "officer", Collections.emptyList()),
+            new AuthResponseDto("authId44", "camunda-admin", Collections.emptyList())));
 
     //when
     authService.cleanAuthorizations(bpmsUrl, jwtToken, List.of(authConfigDto1, authConfigDto2));
 
-    verify(bpmsRestClient).searchAuthorizationsByParams(bpmsUrl, jwtToken, PROCESS_DEFINITION_AUTH_SEARCH_QUERY_PARAMS);
-    verify(bpmsRestClient).searchAuthorizationsByParams(bpmsUrl, jwtToken, PROCESS_INSTANCE_AUTH_SEARCH_QUERY_PARAMS);
+    verify(bpmsRestClient).searchAuthorizationsByParams(bpmsUrl, jwtToken,
+        PROCESS_DEFINITION_AUTH_SEARCH_QUERY_PARAMS);
+    verify(bpmsRestClient).searchAuthorizationsByParams(bpmsUrl, jwtToken,
+        PROCESS_INSTANCE_AUTH_SEARCH_QUERY_PARAMS);
 
     verify(bpmsRestClient).deleteAuthorization(bpmsUrl, jwtToken, "authId1");
     verify(bpmsRestClient).deleteAuthorization(bpmsUrl, jwtToken, "authId2");

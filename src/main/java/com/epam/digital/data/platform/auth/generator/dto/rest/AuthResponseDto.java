@@ -16,6 +16,7 @@
 
 package com.epam.digital.data.platform.auth.generator.dto.rest;
 
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -27,4 +28,5 @@ public class AuthResponseDto {
 
   private String id;
   private String groupId;
+  private List<String> permissions;
 }
