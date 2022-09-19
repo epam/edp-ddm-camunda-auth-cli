@@ -26,8 +26,10 @@ import com.epam.digital.data.platform.starter.logger.annotation.Confidential;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
@@ -40,17 +42,16 @@ import org.springframework.stereotype.Service;
 public class BpmsAuthServiceImpl implements AuthService {
 
   public static final int AUTH_TYPE_GRANT = 1;
-  public static final String PERMISSIONS = "permissions";
   public static final String RESOURCE_TYPE = "resourceType";
   public static final String RESOURCE_ID = "resourceId";
 
   public static final Map<String, String> PROCESS_DEFINITION_AUTH_SEARCH_QUERY_PARAMS = Map.of(
-      PERMISSIONS, String.join(",", Permission.READ.name(), Permission.CREATE_INSTANCE.name()),
       RESOURCE_TYPE, String.valueOf(Resource.PROCESS_DEFINITION.getValue()));
   public static final Map<String, String> PROCESS_INSTANCE_AUTH_SEARCH_QUERY_PARAMS = Map.of(
-      PERMISSIONS, Permission.CREATE.name(),
       RESOURCE_TYPE, String.valueOf(Resource.PROCESS_INSTANCE.getValue()),
       RESOURCE_ID, "*");
+  public static final Set<String> PROCESS_DEFINITION_PERMISSIONS = Set.of(
+      Permission.READ.name(), Permission.CREATE_INSTANCE.name());
 
   private final BpmsRestClient bpmsRestClient;
 
@@ -59,9 +60,15 @@ public class BpmsAuthServiceImpl implements AuthService {
       List<AuthConfigDto> authConfigDtoList) {
     log.info("Deleting authorizations...");
     var pdAuthorizations = bpmsRestClient.searchAuthorizationsByParams(bpmsUrl, token,
-        PROCESS_DEFINITION_AUTH_SEARCH_QUERY_PARAMS);
+            PROCESS_DEFINITION_AUTH_SEARCH_QUERY_PARAMS).stream()
+        .filter(a -> new HashSet<>(a.getPermissions()).equals(PROCESS_DEFINITION_PERMISSIONS))
+        .collect(Collectors.toList());
+    log.info("Process Definition authorizations found: {}", pdAuthorizations.size());
+    log.debug("Process Definitions details: {}", pdAuthorizations);
     var piAuthorizations = bpmsRestClient.searchAuthorizationsByParams(bpmsUrl, token,
         PROCESS_INSTANCE_AUTH_SEARCH_QUERY_PARAMS);
+    log.info("Process Instance authorizations found: {}", piAuthorizations.size());
+    log.debug("Process Instances details: {}", piAuthorizations);
     var authIds = Stream.of(pdAuthorizations, piAuthorizations).flatMap(Collection::stream)
         .filter(a -> !"camunda-admin".equals(a.getGroupId()))
         .map(AuthResponseDto::getId).collect(Collectors.toList());

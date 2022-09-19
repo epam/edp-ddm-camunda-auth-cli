@@ -56,12 +56,11 @@ public class BpmsRestClientIT {
   @Test
   public void shouldReturnAuthIds() throws JsonProcessingException {
     List<AuthResponseDto> authListResponse = List
-        .of(new AuthResponseDto("authId1", null), new AuthResponseDto("authId2", null));
+        .of(new AuthResponseDto("authId1", null, null), new AuthResponseDto("authId2", null, null));
     bpmsWireMockServer.addStubMapping(
         stubFor(get(urlPathEqualTo("/api/authorization"))
             .withHeader("Content-Type", equalTo("application/json"))
             .withHeader("X-Access-Token", equalTo("token"))
-            .withQueryParam("permissions", equalTo("READ,CREATE_INSTANCE"))
             .withQueryParam("resourceType", equalTo("6"))
             .willReturn(aResponse()
                 .withBody(objectMapper.writeValueAsString(authListResponse))
