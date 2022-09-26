@@ -26,7 +26,6 @@ import com.epam.digital.data.platform.starter.logger.annotation.Confidential;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -61,7 +60,7 @@ public class BpmsAuthServiceImpl implements AuthService {
     log.info("Deleting authorizations...");
     var pdAuthorizations = bpmsRestClient.searchAuthorizationsByParams(bpmsUrl, token,
             PROCESS_DEFINITION_AUTH_SEARCH_QUERY_PARAMS).stream()
-        .filter(a -> new HashSet<>(a.getPermissions()).equals(PROCESS_DEFINITION_PERMISSIONS))
+        .filter(a -> a.getPermissions().equals(PROCESS_DEFINITION_PERMISSIONS))
         .collect(Collectors.toList());
     log.info("Process Definition authorizations found: {}", pdAuthorizations.size());
     log.debug("Process Definitions details: {}", pdAuthorizations);

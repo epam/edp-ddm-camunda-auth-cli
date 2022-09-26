@@ -34,6 +34,7 @@ import com.epam.digital.data.platform.auth.generator.enums.Resource;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -64,15 +65,15 @@ public class BpmsAuthServiceImplTest extends BaseTest {
     when(bpmsRestClient.searchAuthorizationsByParams(bpmsUrl, jwtToken,
         PROCESS_DEFINITION_AUTH_SEARCH_QUERY_PARAMS))
         .thenReturn(List.of(new AuthResponseDto("authId1", "citizen",
-                List.of(Permission.READ.name(), Permission.CREATE_INSTANCE.name())),
+                Set.of(Permission.READ.name(), Permission.CREATE_INSTANCE.name())),
             new AuthResponseDto("authId2", "officer",
-                List.of(Permission.READ.name(), Permission.CREATE_INSTANCE.name())),
-            new AuthResponseDto("authId33", "camunda-admin", Collections.emptyList())));
+                Set.of(Permission.READ.name(), Permission.CREATE_INSTANCE.name())),
+            new AuthResponseDto("authId33", "camunda-admin", Collections.emptySet())));
     when(bpmsRestClient.searchAuthorizationsByParams(bpmsUrl, jwtToken,
         PROCESS_INSTANCE_AUTH_SEARCH_QUERY_PARAMS))
-        .thenReturn(List.of(new AuthResponseDto("authId3", "citizen", Collections.emptyList()),
-            new AuthResponseDto("authId4", "officer", Collections.emptyList()),
-            new AuthResponseDto("authId44", "camunda-admin", Collections.emptyList())));
+        .thenReturn(List.of(new AuthResponseDto("authId3", "citizen", Collections.emptySet()),
+            new AuthResponseDto("authId4", "officer", Collections.emptySet()),
+            new AuthResponseDto("authId44", "camunda-admin", Collections.emptySet())));
 
     //when
     authService.cleanAuthorizations(bpmsUrl, jwtToken, List.of(authConfigDto1, authConfigDto2));
