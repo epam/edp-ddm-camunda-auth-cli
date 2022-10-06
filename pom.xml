@@ -17,11 +17,12 @@
 	<properties>
 		<java.version>11</java.version>
 		<log4j.version>2.17.0</log4j.version>
-		<ddm-starter-logger.version>1.6.0.1</ddm-starter-logger.version>
+		<ddm-starter-logger.version>1.6.0.6</ddm-starter-logger.version>
 		<wiremock.verion>2.27.2</wiremock.verion>
 		<maven.surefire.plugin.version>2.22.2</maven.surefire.plugin.version>
 		<maven.failsafe.plugin.version>2.22.2</maven.failsafe.plugin.version>
 		<spring.cloud.version>2021.0.0</spring.cloud.version>
+		<snakeyaml.version>1.33</snakeyaml.version>
 		<sonar.coverage.exclusions>
                         **/com/epam/digital/data/platform/auth/generator/config/**/*,
 			**/com/epam/digital/data/platform/auth/generator/dto/**/*,
@@ -48,6 +49,11 @@
 			  <groupId>org.apache.logging.log4j</groupId>
 			  <artifactId>log4j-core</artifactId>
 			  <version>${log4j.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.yaml</groupId>
+				<artifactId>snakeyaml</artifactId>
+				<version>${snakeyaml.version}</version>
 			</dependency>
 	  </dependencies>
 	</dependencyManagement>
