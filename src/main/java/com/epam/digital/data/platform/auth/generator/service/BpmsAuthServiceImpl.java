@@ -60,7 +60,7 @@ public class BpmsAuthServiceImpl implements AuthService {
     log.info("Deleting authorizations...");
     var pdAuthorizations = bpmsRestClient.searchAuthorizationsByParams(bpmsUrl, token,
             PROCESS_DEFINITION_AUTH_SEARCH_QUERY_PARAMS).stream()
-        .filter(a -> a.getPermissions().equals(PROCESS_DEFINITION_PERMISSIONS))
+        .filter(a -> a.getPermissions().containsAll(PROCESS_DEFINITION_PERMISSIONS))
         .collect(Collectors.toList());
     log.info("Process Definition authorizations found: {}", pdAuthorizations.size());
     log.debug("Process Definitions details: {}", pdAuthorizations);
