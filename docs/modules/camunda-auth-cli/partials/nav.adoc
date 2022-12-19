@@ -1,3 +1,3 @@
-**** xref:camunda-auth-cli:summary.adoc[Інструмент командного рядка Camunda-auth-cli]
-***** xref:camunda-auth-cli:dependencies.adoc[Залежності / Основні сценарії]
-***** xref:camunda-auth-cli:technologies.adoc[Технологічний стек]
+******* xref:camunda-auth-cli:summary.adoc[Інструмент командного рядка Camunda-auth-cli]
+******** xref:camunda-auth-cli:dependencies.adoc[Залежності / Основні сценарії]
+******** xref:camunda-auth-cli:technologies.adoc[Технологічний стек]
