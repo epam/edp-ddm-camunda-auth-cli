@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 EPAM Systems.
+ * Copyright 2023 EPAM Systems.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,13 +25,21 @@ import java.util.List;
 public interface AuthService {
 
   /**
-   * Remove authorizations for specific roles based on config files.
-   * @param authConfigDtoList deserialized list of config yaml files.
+   * Remove authorizations for process-instances (permissions = 'CREATE', resource_id = '*') and
+   * process-definitions (permissions = 'READ', 'CREATE_INSTANCE').
+   *
+   * @param clientUrl bpms base url.
+   * @param jwtToken  authorization token.
    */
-  void cleanAuthorizations(String clientUrl, String jwtToken, List<AuthConfigDto> authConfigDtoList);
+  void cleanAuthorizations(String clientUrl, String jwtToken);
 
   /**
    * Create authorizations for specific roles and process definition based on config files.
+   * Process-definitions -> permissions = 'READ', 'CREATE_INSTANCE'.
+   * Process-instances  -> permissions = 'CREATE', resource_id = '*'
+   *
+   * @param clientUrl         bpms base url.
+   * @param jwtToken          authorization token.
    * @param authConfigDtoList deserialized list of config yaml files.
    */
   void createAuthorizations(String clientUrl, String jwtToken, List<AuthConfigDto> authConfigDtoList);

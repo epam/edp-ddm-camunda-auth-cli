@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 EPAM Systems.
+ * Copyright 2023 EPAM Systems.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ public class BpmsCamundaAuthCliRunner implements ApplicationRunner {
     var bpmsToken = getBpmsToken(args);
     var authConfigDtos = getAuthConfigurations(args);
 
-    authService.cleanAuthorizations(bpmsUrl, bpmsToken, authConfigDtos);
+    authService.cleanAuthorizations(bpmsUrl, bpmsToken);
     authService.createAuthorizations(bpmsUrl, bpmsToken, authConfigDtos);
   }
 

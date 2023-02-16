@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 EPAM Systems.
+ * Copyright 2023 EPAM Systems.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,12 @@
 
 package com.epam.digital.data.platform.auth.generator.client;
 
-import com.epam.digital.data.platform.auth.generator.dto.rest.AuthResponseDto;
-import com.epam.digital.data.platform.auth.generator.dto.rest.AuthorizationCreateDto;
+import com.epam.digital.data.platform.auth.generator.dto.rest.CountResultDto;
+import com.epam.digital.data.platform.auth.generator.dto.rest.ProcessDefinitionAuthDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -38,46 +36,52 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RequiredArgsConstructor
 public class BpmsRestClient {
 
-  private static final String API = "api";
-  private static final String AUTHORIZATION = "authorization";
+  private static final String BASE_PATH = "api/extended/authorizations";
+  private static final String DELETE = "delete";
+  private static final String CREATE = "create";
+  private static final String PROCESS_DEFINITION = "process-definition";
+  private static final String PROCESS_INSTANCE = "process-instance";
 
   private final RestTemplate restTemplate;
   private final ObjectMapper objectMapper;
 
-  public List<AuthResponseDto> searchAuthorizationsByParams(String bpmsBaseUrl, String token,
-      Map<String, String> queryParams) {
-    log.debug("Get authorizations by {}", queryParams);
-    var response = performGet(bpmsBaseUrl, token, AUTHORIZATION, queryParams);
+  public CountResultDto deleteAuthorizations(String bpmsBaseUrl, String token) {
+    log.debug("Delete authorizations");
+    var response = performDelete(bpmsBaseUrl, token);
     return deserializeResponse(response.getBody());
   }
 
-  public void deleteAuthorization(String bpmsBaseUrl, String token, String authId) {
-    log.debug("Delete authorization with id {}", authId);
-    performDelete(bpmsBaseUrl, token, AUTHORIZATION, authId);
+  public CountResultDto createProcessInstanceAuthorizations(String bpmsBaseUrl, String token,
+      List<String> roles) {
+    log.debug("Create process instance authorizations {}", roles);
+    var response = performPost(bpmsBaseUrl, token, PROCESS_INSTANCE, roles);
+    return deserializeResponse(response.getBody());
   }
 
-  public void createAuthorization(String bpmsBaseUrl, String token, AuthorizationCreateDto createDto) {
-    log.debug("Create authorization {}", createDto);
-    var uri = UriComponentsBuilder.fromHttpUrl(bpmsBaseUrl).pathSegment(API)
-        .pathSegment(AUTHORIZATION).pathSegment("create").build().toUri();
-
-    perform(RequestEntity.post(uri).headers(getHeaders(token)).body(serializeAuthorizationCreateDto(createDto)));
+  public CountResultDto createProcessDefinitionAuthorizations(String bpmsBaseUrl, String token,
+      List<ProcessDefinitionAuthDto> body) {
+    log.debug("Create process definition authorizations {}", body);
+    var response = performPost(bpmsBaseUrl, token, PROCESS_DEFINITION, body);
+    return deserializeResponse(response.getBody());
   }
 
-  private ResponseEntity<String> performGet(String bpmsBaseUrl, String token, String resource,
-      Map<String, String> searchCriteria) {
-    var uri = UriComponentsBuilder.fromHttpUrl(bpmsBaseUrl).pathSegment(API)
-        .pathSegment(resource).encode();
-    if (Objects.nonNull(searchCriteria)) {
-      searchCriteria.forEach(uri::queryParam);
-    }
-    return perform(RequestEntity.get(uri.build().toUri()).headers(getHeaders(token)).build());
+  private ResponseEntity<String> performPost(String bpmsBaseUrl, String token, String path,
+      Object body) {
+    var uri = UriComponentsBuilder.fromHttpUrl(bpmsBaseUrl)
+        .pathSegment(BASE_PATH.split("/"))
+        .pathSegment(path)
+        .pathSegment(CREATE)
+        .build().toUri();
+
+    return perform(RequestEntity.post(uri).headers(getHeaders(token))
+        .body(serializeAuthorizationCreateDto(body)));
   }
 
-  private ResponseEntity<String> performDelete(String bpmsBaseUrl, String token, String resource,
-      String resourceId) {
-    var uri = UriComponentsBuilder.fromHttpUrl(bpmsBaseUrl).pathSegment(API).pathSegment(resource)
-        .pathSegment(resourceId).build().toUri();
+  private ResponseEntity<String> performDelete(String bpmsBaseUrl, String token) {
+    var uri = UriComponentsBuilder.fromHttpUrl(bpmsBaseUrl)
+        .pathSegment(BASE_PATH.split("/"))
+        .pathSegment(DELETE)
+        .build().toUri();
 
     return perform(RequestEntity.delete(uri).headers(getHeaders(token)).build());
   }
@@ -93,7 +97,7 @@ public class BpmsRestClient {
     return headers;
   }
 
-  private List<AuthResponseDto> deserializeResponse(String response) {
+  private CountResultDto deserializeResponse(String response) {
     try {
       return objectMapper.readValue(response, new TypeReference<>() {
       });
@@ -103,12 +107,12 @@ public class BpmsRestClient {
     }
   }
 
-  private String serializeAuthorizationCreateDto(AuthorizationCreateDto authorizationCreateDto) {
+  private String serializeAuthorizationCreateDto(Object requestBody) {
     try {
-      return objectMapper.writeValueAsString(authorizationCreateDto);
+      return objectMapper.writeValueAsString(requestBody);
     } catch (JsonProcessingException e) {
       e.clearLocation();
-      throw new IllegalArgumentException("Couldn't serialize authorizationCreateDto", e);
+      throw new IllegalArgumentException("Couldn't serialize request body", e);
     }
   }
 }

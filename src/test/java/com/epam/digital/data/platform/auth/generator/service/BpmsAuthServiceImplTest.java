@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 EPAM Systems.
+ * Copyright 2023 EPAM Systems.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,6 @@
 
 package com.epam.digital.data.platform.auth.generator.service;
 
-import static com.epam.digital.data.platform.auth.generator.service.BpmsAuthServiceImpl.AUTH_TYPE_GRANT;
-import static com.epam.digital.data.platform.auth.generator.service.BpmsAuthServiceImpl.PROCESS_DEFINITION_AUTH_SEARCH_QUERY_PARAMS;
-import static com.epam.digital.data.platform.auth.generator.service.BpmsAuthServiceImpl.PROCESS_INSTANCE_AUTH_SEARCH_QUERY_PARAMS;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -27,19 +24,14 @@ import com.epam.digital.data.platform.auth.generator.client.BpmsRestClient;
 import com.epam.digital.data.platform.auth.generator.dto.configuration.AuthConfigDto;
 import com.epam.digital.data.platform.auth.generator.dto.configuration.AuthDefinitionDto;
 import com.epam.digital.data.platform.auth.generator.dto.configuration.ProcessDefinitionAuthConfigDto;
-import com.epam.digital.data.platform.auth.generator.dto.rest.AuthResponseDto;
-import com.epam.digital.data.platform.auth.generator.dto.rest.AuthorizationCreateDto;
-import com.epam.digital.data.platform.auth.generator.enums.Permission;
-import com.epam.digital.data.platform.auth.generator.enums.Resource;
-import java.util.Arrays;
-import java.util.Collections;
+import com.epam.digital.data.platform.auth.generator.dto.rest.CountResultDto;
+import com.epam.digital.data.platform.auth.generator.dto.rest.ProcessDefinitionAuthDto;
 import java.util.List;
-import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
-public class BpmsAuthServiceImplTest extends BaseTest {
+class BpmsAuthServiceImplTest extends BaseTest {
 
   @Mock
   private BpmsRestClient bpmsRestClient;
@@ -52,84 +44,45 @@ public class BpmsAuthServiceImplTest extends BaseTest {
   }
 
   @Test
-  public void shouldCleanAuthorizations() {
-    AuthConfigDto authConfigDto1 = new AuthConfigDto(
-        new AuthDefinitionDto(List.of(
-            new ProcessDefinitionAuthConfigDto("Process_1", List.of("officer", "citizen")),
-            new ProcessDefinitionAuthConfigDto("business-process", List.of("officer")))
-        ));
-    AuthConfigDto authConfigDto2 = new AuthConfigDto(
-        new AuthDefinitionDto(List.of(
-            new ProcessDefinitionAuthConfigDto("Process_2", List.of("citizen"))
-        )));
-    when(bpmsRestClient.searchAuthorizationsByParams(bpmsUrl, jwtToken,
-        PROCESS_DEFINITION_AUTH_SEARCH_QUERY_PARAMS))
-        .thenReturn(List.of(new AuthResponseDto("authId1", "citizen",
-                Set.of(Permission.READ.name(), Permission.CREATE_INSTANCE.name())),
-            new AuthResponseDto("authId2", "officer",
-                Set.of(Permission.READ.name(), Permission.CREATE_INSTANCE.name())),
-            new AuthResponseDto("authId33", "camunda-admin", Collections.emptySet())));
-    when(bpmsRestClient.searchAuthorizationsByParams(bpmsUrl, jwtToken,
-        PROCESS_INSTANCE_AUTH_SEARCH_QUERY_PARAMS))
-        .thenReturn(List.of(new AuthResponseDto("authId3", "citizen", Collections.emptySet()),
-            new AuthResponseDto("authId4", "officer", Collections.emptySet()),
-            new AuthResponseDto("authId44", "camunda-admin", Collections.emptySet())));
+  void shouldCleanAuthorizations() {
+    var countResult = new CountResultDto(1);
 
-    //when
-    authService.cleanAuthorizations(bpmsUrl, jwtToken, List.of(authConfigDto1, authConfigDto2));
+    when(bpmsRestClient.deleteAuthorizations(bpmsUrl, jwtToken)).thenReturn(countResult);
+    authService.cleanAuthorizations(bpmsUrl, jwtToken);
 
-    verify(bpmsRestClient).searchAuthorizationsByParams(bpmsUrl, jwtToken,
-        PROCESS_DEFINITION_AUTH_SEARCH_QUERY_PARAMS);
-    verify(bpmsRestClient).searchAuthorizationsByParams(bpmsUrl, jwtToken,
-        PROCESS_INSTANCE_AUTH_SEARCH_QUERY_PARAMS);
-
-    verify(bpmsRestClient).deleteAuthorization(bpmsUrl, jwtToken, "authId1");
-    verify(bpmsRestClient).deleteAuthorization(bpmsUrl, jwtToken, "authId2");
-    verify(bpmsRestClient).deleteAuthorization(bpmsUrl, jwtToken, "authId3");
-    verify(bpmsRestClient).deleteAuthorization(bpmsUrl, jwtToken, "authId4");
+    verify(bpmsRestClient).deleteAuthorizations(bpmsUrl, jwtToken);
   }
 
   @Test
-  public void shouldCreateAuthorization() {
+  void shouldCreateAuthorizations() {
+    var roles = List.of("officer", "citizen");
     AuthConfigDto authConfigDto1 = new AuthConfigDto(
         new AuthDefinitionDto(List.of(
-            new ProcessDefinitionAuthConfigDto("Process_1", List.of("officer", "citizen")),
+            new ProcessDefinitionAuthConfigDto("Process_1", roles),
             new ProcessDefinitionAuthConfigDto("business-process", List.of("officer")))
         ));
     AuthConfigDto authConfigDto2 = new AuthConfigDto(
         new AuthDefinitionDto(List.of(
             new ProcessDefinitionAuthConfigDto("Process_2", List.of("citizen"))
         )));
+    var processDefinitionAuthDto = new ProcessDefinitionAuthDto("officer",
+        "Process_1");
+    var processDefinitionAuthDto2 = new ProcessDefinitionAuthDto("citizen",
+        "Process_1");
+    var processDefinitionAuthDto3 = new ProcessDefinitionAuthDto("officer",
+        "business-process");
+    var processDefinitionAuthDto4 = new ProcessDefinitionAuthDto("citizen",
+        "Process_2");
+    var definitionBody = List.of(processDefinitionAuthDto, processDefinitionAuthDto2,
+        processDefinitionAuthDto3, processDefinitionAuthDto4);
 
-    //when
+    when(bpmsRestClient.createProcessDefinitionAuthorizations(bpmsUrl, jwtToken,
+        definitionBody)).thenReturn(new CountResultDto(4));
+    when(bpmsRestClient.createProcessInstanceAuthorizations(bpmsUrl, jwtToken, roles)).thenReturn(
+        new CountResultDto(2));
     authService.createAuthorizations(bpmsUrl, jwtToken, List.of(authConfigDto1, authConfigDto2));
 
-    AuthorizationCreateDto pdAuthCreateDto = buildCreateDto(
-        Resource.PROCESS_DEFINITION,
-        Arrays.asList(Permission.CREATE_INSTANCE.name(), Permission.READ.name()), AUTH_TYPE_GRANT,
-        "Process_1", "officer");
-    AuthorizationCreateDto pdAuthCreateDto2 = buildCreateDto(
-        Resource.PROCESS_DEFINITION,
-        Arrays.asList(Permission.CREATE_INSTANCE.name(), Permission.READ.name()), AUTH_TYPE_GRANT,
-        "Process_1", "citizen");
-    AuthorizationCreateDto pdAuthCreateDto3 = buildCreateDto(
-        Resource.PROCESS_DEFINITION,
-        Arrays.asList(Permission.CREATE_INSTANCE.name(), Permission.READ.name()), AUTH_TYPE_GRANT,
-        "business-process", "officer");
-
-    AuthorizationCreateDto piAuthCreateDto = buildCreateDto(
-        Resource.PROCESS_INSTANCE, Collections.singletonList(Permission.CREATE.name()),
-        AUTH_TYPE_GRANT, "*", "officer");
-    AuthorizationCreateDto piAuthCreateDto2 = buildCreateDto(
-        Resource.PROCESS_INSTANCE, Collections.singletonList(Permission.CREATE.name()),
-        AUTH_TYPE_GRANT, "*", "citizen");
-
-    //verify process definition authorizations creation
-    verify(bpmsRestClient).createAuthorization(bpmsUrl, jwtToken, pdAuthCreateDto);
-    verify(bpmsRestClient).createAuthorization(bpmsUrl, jwtToken, pdAuthCreateDto2);
-    verify(bpmsRestClient).createAuthorization(bpmsUrl, jwtToken, pdAuthCreateDto3);
-    //verify process instance authorizations creation
-    verify(bpmsRestClient).createAuthorization(bpmsUrl, jwtToken, piAuthCreateDto);
-    verify(bpmsRestClient).createAuthorization(bpmsUrl, jwtToken, piAuthCreateDto2);
+    verify(bpmsRestClient).createProcessDefinitionAuthorizations(bpmsUrl, jwtToken, definitionBody);
+    verify(bpmsRestClient).createProcessInstanceAuthorizations(bpmsUrl, jwtToken, roles);
   }
 }

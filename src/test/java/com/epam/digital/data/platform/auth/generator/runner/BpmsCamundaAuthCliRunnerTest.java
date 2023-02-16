@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 EPAM Systems.
+ * Copyright 2023 EPAM Systems.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.boot.ApplicationArguments;
 
-public class BpmsCamundaAuthCliRunnerTest extends BaseTest {
+class BpmsCamundaAuthCliRunnerTest extends BaseTest {
 
   @Mock
   private AuthService authService;
@@ -64,7 +64,7 @@ public class BpmsCamundaAuthCliRunnerTest extends BaseTest {
   }
 
   @Test
-  public void shouldCleanAndCreateAuthorizationsBasedOnConfigFiles() throws IOException {
+  void shouldCleanAndCreateAuthorizationsBasedOnConfigFiles() throws IOException {
     AuthConfigDto authConfigDto1 = new AuthConfigDto(
         new AuthDefinitionDto(List.of(
             new ProcessDefinitionAuthConfigDto("Process_1", List.of("officer", "citizen")),
@@ -77,12 +77,12 @@ public class BpmsCamundaAuthCliRunnerTest extends BaseTest {
 
     runner.run(args);
 
-    verify(authService).cleanAuthorizations(bpmsUrl, "token", List.of(authConfigDto1, authConfigDto2));
+    verify(authService).cleanAuthorizations(bpmsUrl, "token");
     verify(authService).createAuthorizations(bpmsUrl, "token", List.of(authConfigDto1, authConfigDto2));
   }
 
   @Test
-  public void shouldThrowExceptionWhenBpmsUrlNotFound() {
+  void shouldThrowExceptionWhenBpmsUrlNotFound() {
     when(args.getOptionValues("BPMS_URL")).thenReturn(null);
 
     var exception = assertThrows(IllegalArgumentException.class,
@@ -93,7 +93,7 @@ public class BpmsCamundaAuthCliRunnerTest extends BaseTest {
   }
 
   @Test
-  public void shouldThrowExceptionWhenBpmsTokenNotFound() {
+  void shouldThrowExceptionWhenBpmsTokenNotFound() {
     when(args.getOptionValues("BPMS_TOKEN")).thenReturn(null);
 
     var exception = assertThrows(IllegalArgumentException.class,
@@ -104,7 +104,7 @@ public class BpmsCamundaAuthCliRunnerTest extends BaseTest {
   }
 
   @Test
-  public void shouldThrowExceptionWhenAuthFilesNotFound() {
+  void shouldThrowExceptionWhenAuthFilesNotFound() {
     when(args.getOptionValues("AUTH_FILES")).thenReturn(null);
 
     var exception = assertThrows(IllegalArgumentException.class,
