@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 EPAM Systems.
+ * Copyright 2023 EPAM Systems.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,17 @@
  * limitations under the License.
  */
 
-package com.epam.digital.data.platform.auth.generator.enums;
+package com.epam.digital.data.platform.auth.generator.dto.rest;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class ProcessDefinitionAuthDto {
 
-@Getter
-@RequiredArgsConstructor
-public enum Resource {
-
-  PROCESS_DEFINITION(6),
-  PROCESS_INSTANCE(8);
-
-  private final int value;
+  private String groupId;
+  private String processDefinitionId;
 }

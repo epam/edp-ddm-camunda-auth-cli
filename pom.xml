@@ -11,7 +11,7 @@
 
 	<groupId>com.epam.digital.data.platform</groupId>
 	<artifactId>camunda-auth-cli</artifactId>
-	<version>1.8.1</version>
+	<version>1.9.0</version>
 	<name>camunda-auth-cli</name>
 
 	<properties>
@@ -65,7 +65,6 @@
 			<artifactId>ddm-starter-logger</artifactId>
 			<version>${ddm-starter-logger.version}</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter</artifactId>
@@ -110,6 +109,14 @@
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
 			<version>2.13.3</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.retry</groupId>
+			<artifactId>spring-retry</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-aspects</artifactId>
 		</dependency>
 
 	</dependencies>
